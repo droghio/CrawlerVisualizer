@@ -1,0 +1,16 @@
+{
+  "name": "Visualizer",
+  "version": "0.0.1-a",
+  "description": "Data visualizer companion to the CrawlingSpecter web crawler.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "John Drogo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.4.3",
+    "mongoose": "^3.8.12",
+    "logfmt": "^1.1.2"
+  }
+}
