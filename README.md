@@ -9,7 +9,7 @@ You must have nodejs installed and access to a mongodb.
 I use MongoHQ but any mongo database should work.
 
 This program is intended as a companion to my CrawlingSpecter program.
-If you point this program to the same MongoDB used to store a crawl data you will get a nice visualization of the site.
+If you point this program to the same MongoDB used to store crawl data you will get a nice visualization of the site.
 
 
 
