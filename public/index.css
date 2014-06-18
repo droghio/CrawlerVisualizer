@@ -1,0 +1,42 @@
+path.link {
+    fill: none;
+    stroke: #DDD;
+    stroke-width: 1px;
+}
+
+circle {
+    stroke: #000;
+    stroke-width: 1px;
+}
+
+text {
+    font: 10px sans-serif;
+    pointer-events: none;
+    visibility: hidden;
+    text-shadow: #FFF;
+    position: relative;
+    z-index: -1;
+}
+
+text.numlinks{
+    stroke: #FFF;
+    font: 10px sans-serif;
+    visibility: visible;
+}
+
+g:hover > text {
+    color: black;
+    visibility: visible;
+}
+
+#controls{
+    position: fixed;
+    background-color: rgba(0, 0, 0, .5);
+    top: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+.vanish{
+    visibility: hidden;
+}
