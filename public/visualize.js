@@ -20,6 +20,29 @@ function determineDistance(d, index){
 }
 
 
+
+
+gradients = [
+             '<radialGradient id="red" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">\
+             <stop style="stop-color:#D00;stop-opacity:1;" offset="0" id="stop3757" />\
+             <stop id="stop3763" offset="0.5" style="stop-color:#C00;stop-opacity:1;" />\
+             <stop style="stop-color:#A00;stop-opacity:1;" offset="1" id="stop3759" />\
+             </radialGradient>',
+             '<radialGradient id="green" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">\
+             <stop style="stop-color:#0D0;stop-opacity:1;" offset="0" id="stop3757" />\
+             <stop id="stop3763" offset="0.5" style="stop-color:#0C0;stop-opacity:1;" />\
+             <stop style="stop-color:#0A0;stop-opacity:1;" offset="1" id="stop3759" />\
+             </radialGradient>',
+]
+
+
+
+
+
+
+
+
+
 function resetVisualize(){
     
     nodes = {}
