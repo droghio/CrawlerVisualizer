@@ -3,6 +3,11 @@ var logfmt = require("logfmt");
 var links = require("./links");
 
 var app = express();
+
+//Fixes caching issues with Safai.
+//  ->http://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
+
+app.disable('etag');
 app.use(logfmt.requestLogger());
 
 
