@@ -17,9 +17,33 @@
     <body onload="resetVisualize()">
         <section id="main">
             <div id="controls">
-                    <input type="text" id="linklimit" value="10"></input>
-                    <button onclick="resetVisualize()">Reload</button>
-                    <input type="range" min=1 max=1000 value=750 id="svg-scale"></input>
+                    <div style="height: 25px;">
+                        <label style="margin-left: 5px;">Zoom:</label> <input type="range" min=1 max=1000 value=750 id="svg-scale"></input>
+                        <button style="margin-left: 5px;" onclick="resetVisualize()">Reload</button>
+                        <input type="text" id="linklimit" value="10"></input>
+                        <label style="float: right; display: inline; margin-top: 3px;">Depth: </label>
+                    </div>
+                    <div id="modalview" style="
+                        height: 100vh;
+                        width: 100vw;
+                        position: fixed;
+                        background-color: rgba(0, 0, 0, .5);
+                        "><img src="spinner.gif" style="
+                        /*From: http://stackoverflow.com/questions/14068103/disable-antialising-when-scaling-images */
+                        image-rendering: optimizeSpeed;             /* F**K SMOOTHING, GIVE ME SPEED  */
+                        image-rendering: -moz-crisp-edges;          /* Firefox                        */
+                        image-rendering: -o-crisp-edges;            /* Opera                          */
+                        image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+                        image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+                        -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+                        width: 200px;
+                        position: relative;
+                        margin: auto;
+                        top: 50vh;
+                        left: 50vw;
+                        margin-left: -100px;
+                        margin-top: -150px;
+                        "></img></div>
             </div>
         </section>
     </body>

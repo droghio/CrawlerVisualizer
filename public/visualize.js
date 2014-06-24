@@ -105,6 +105,8 @@ function resetVisualize(){
     maxnumberlinks = 0
     
     var rainbow = ["gray", "violet", "blue", "green", "#DD0", "orange", "red"]
+    $("#modalview").fadeIn();
+    
     
     // get the data
     d3.json("/data?limit="+document.getElementById("linklimit").value, function(error, links) {
@@ -284,7 +286,9 @@ function resetVisualize(){
             
         }
 
+        //Hides elements we don't need to animate (helps speed rendering), and closes modal view.
         function hidedetails(){
+            $("#modalview").fadeOut();
             d3.selectAll("path").attr("class", "vanish").style("opacity", 0);
             d3.selectAll("[data-partialnode=true]").attr("class", "vanish").style("opacity", 0);
         }
