@@ -2,6 +2,14 @@ path.link {
     fill: none;
     stroke: #DDD;
     stroke-width: 1px;
+    opacity: 0; /*Set by script to fade in.*/
+    transition: opacity 1s;
+}
+
+
+[data-partialnode="true"]{
+    opacity: 0;
+    transition: opacity 1s;
 }
 
 circle {
@@ -9,13 +17,15 @@ circle {
     stroke-width: 1px;
 }
 
+.ui-tooltip{
+    max-width: 100vw !important;
+    pointer-events: none;
+}
+
 text {
     font: 10px sans-serif;
     pointer-events: none;
-    visibility: hidden;
     text-shadow: #FFF;
-    position: relative;
-    z-index: -1;
 }
 
 text.numlinks{
@@ -35,6 +45,7 @@ g:hover > text {
     top: 0px;
     left: 0px;
     width: 100%;
+    z-index: 100;
 }
 
 .vanish{

@@ -7,7 +7,6 @@ var app = express();
 //Fixes caching issues with Safai.
 //  ->http://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
 
-app.disable('etag');
 app.use(logfmt.requestLogger());
 
 
@@ -17,6 +16,8 @@ module.exports = {
 
     start: function (){
         var port = Number(process.env.PORT);
+        
+        app.use(function(req, res, next){ res.setHeader('Last-Modified', (new Date()).toUTCString()); next(); });
         app.use(express.static(__dirname + "/public"));
 
         //I'm making the assumption that the first page request won't happen until the database establishes a connection.

@@ -1,4 +1,7 @@
 //Var is a local declaration.
+//Code modified from example make by D3noob:
+// -> http://www.d3noob.org/2013/03/d3js-force-directed-graph-example-basic.html
+
 
 force = 0;
 nodes = {};
@@ -38,9 +41,61 @@ gradients = [
 
 
 
+//Borrowed from:
+//  -> http://stackoverflow.com/questions/13057606/jquery-ui-tooltip-manual-open-close
+$.widget( "custom.tooltipX", $.ui.tooltip, {
+    options: {
+        autoShow: false,
+        autoHide: false
+    },
+     
+    _create: function() {
+        this._super();
+        if(!this.options.autoShow){
+            this._off(this.element, "mouseover focusin");
+        }
+    },
+         
+    _open: function( event, target, content ) {
+        this._superApply(arguments);
+         
+        if(!this.options.autoHide){
+            this._off(target, "mouseleave focusout");
+        }
+    }
+});
 
 
 
+$.widget( "custom.tooltipNum", $.ui.tooltip, {
+    options: {
+        autoShow: false,
+        autoHide: false
+    },
+     
+    _create: function() {
+        this._super();
+        if(!this.options.autoShow){
+            this._off(this.element, "mouseover focusin");
+        }
+    },
+         
+    _open: function( event, target, content ) {
+        this._superApply(arguments);
+         
+        if(!this.options.autoHide){
+            this._off(target, "mouseleave focusout");
+        }
+    }
+});
+
+
+
+$( document ).ready(function(){
+    $("#svg-scale").change(function(){
+        $("svg").css("transform", "scale("+$("#svg-scale").val()/750+")");
+    })
+})
 
 
 function resetVisualize(){
@@ -100,18 +155,23 @@ function resetVisualize(){
         .size([width, height])
         .linkDistance(determineDistance)
         .charge(determineCharge)
-        //.chargeDistance(200)
+        //.chargeDistance(maxnumberlinks)
         .gravity(.5)
         .friction(.5)
         .on("tick", tick)
+        .on("end", drawpaths)
+        .on("start", hidedetails)
         .start();
         
         var svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height);
         
+        //Scale the svg element according to scale.
+        $("svg").css("transform", "scale("+$("#svg-scale").val()/750+")");
+            
         //Center window in view.
-        window.scrollTo(14500, 4500)
+        window.scrollTo((width-window.innerWidth)/2, (height-window.innerHeight)/2)
         
         // build the arrow.
         svg.append("svg:defs").selectAll("marker")
@@ -126,7 +186,7 @@ function resetVisualize(){
         .attr("orient", "auto")
         .append("svg:path")
         .attr("d", "M 0,-3  L 5,0  L 0,3");
-        
+
         // add the links and the arrows
         var path = svg.append("svg:g").selectAll("path")
         .data(force.links())
@@ -137,53 +197,98 @@ function resetVisualize(){
         // define the nodes
         var node = svg.selectAll(".node")
         .data(force.nodes())
-        .enter().append("g")
+        .enter().append("circle")
         .attr("class", "node")
         .call(force.drag)
-        .on("drag", function(){ d3.event.sourceEvent.stopPropagation(); })
+        .on("drag", function(){  d3.event.sourceEvent.stopPropagation(); })
         .on("click", function(d){  if (!d3.event.defaultPrevented){ window.open(d.name); }  })
-        
-        
+
+        .on("mouseover", function(d){
+
+            $(this).tooltipX({
+                items: $(this),
+                content: this.attributes.getNamedItem("data-url").value,
+                position: {
+                    my: "left top",
+                    at: "center+"+(r=(2*this.attributes.getNamedItem("r").value*$("#svg-scale").val()/750))+" center+"+r
+                }
+            });
+            
+            $(this).tooltipX("open");
+            
+            //Note these are strings.
+            var position = $(this).attr("transform").replace("translate(", "").replace(")", "").split(",")
+            var x = (Number(position[0])-width/2)*$("#svg-scale").val()/750+width/2
+            var y = (Number(position[1])-height/2)*$("#svg-scale").val()/750+height/2
+
+            $("body").append("<div id='numlinks' data-url='" +
+                this.attributes.getNamedItem("data-url").value +
+                "' style='\
+                    left: "+x+"px;\
+                    top: "+y+"px;\
+                    margin-left: -25px;\
+                    margin-top: -9px;\
+                    text-align: center;\
+                    color: white;\
+                    width: 50px;\
+                    height: 18px;\
+                    box-shadow: none;\
+                    border: none;\
+                ' class='ui-tooltip'>"+
+                    this.attributes.getNamedItem("data-numlinks").value+
+                "</div>"
+            )
+
+        })
+        .on("mouseout", function(){ $(this).tooltipX("close"); $("#numlinks[data-url='"+this.attributes.getNamedItem("data-url").value+"']").fadeOut(function(){$(this).remove()}) })
+
         // add the nodes
         //Links that were not directly loaded are black.
-        node.append("circle")
-        .attr("r", function(d){ return d.value && d.value > 5 ? (d.value/5)+5 : 5; })
+        //node.append("circle")
+        node.attr("r", function(d){ return d.value && d.value > 5 ? (d.value/5)+5 : 5; })
         .attr("fill", function(d){
             return d.placeholder ? "black" : rainbow[Math.floor(d.value*(rainbow.length-1)/maxnumberlinks)]
         })
+        .attr("class", function (d){ return d.placeholder ? "vanish" : "path" })
         
-        // add the text
-        node.append("text")
-        .attr("x", 12)
-        .attr("dy", ".35em")
-        .text(function(d) { return d.name; });
-        
-        //Add number of links.
-        node.append("text")
-        .text(function(d) { return d.value; }).attr("x", -2.5).attr("y", 2.5).attr("class", "numlinks");
+
+        // store the url as a data attribute
+        node
+        .attr("data-url", function(d) { return d.name; })
+        .attr("data-numlinks", function(d) { return d.value; })
+        .attr("data-partialnode", function(d){ return d.placeholder })
+
         
         // add the curvy lines
-        function tick() {
-            shoulddelete = false
+        function tick() { node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; }); }
+        
+        function drawpaths(){
+            
             path.attr("d", function(d) {
                 //Only bother drawing a path if we have something to draw from.
-                    var dx = d.target.x - d.source.x,
-                    dy = d.target.y - d.source.y,
-                    dr = Math.sqrt(dx * dx + dy * dy);
-              
-                    if (dr == 0){ shoulddelete = true; }
-                      
-                    return "M" + d.source.x + "," +
-                    d.source.y + "A" +
-                    dr + "," + dr + " 0 0,1 " +
-                    d.target.x + "," +
-                    d.target.y;
-                
-            })
-            //.attr("class", function(d){ return d.value !== null ? "b" : "path" });
+                var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+                dr = Math.sqrt(dx * dx + dy * dy);
+
+                if (dr == 0){ shoulddelete = true; }
+
+                return "M" + d.source.x + "," +
+                d.source.y + "A" +
+                dr + "," + dr + " 0 0,1 " +
+                d.target.x + "," +
+                d.target.y;
+            }).attr("class", "link").style("opacity", 1)
             
-            //if (shoulddelete) { path.attr("class", "vanish"); }
-            node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+            //Show the black nodes.
+            node.attr("class", "path").style("opacity", 1)
+            
         }
+
+        function hidedetails(){
+            d3.selectAll("path").attr("class", "vanish").style("opacity", 0);
+            d3.selectAll("[data-partialnode=true]").attr("class", "vanish").style("opacity", 0);
+        }
+        
+            
     });
 }
