@@ -45,7 +45,7 @@ module.exports = {
 
 
     getHundredLinks: function(callback, limit){
-        if (!limit){ limit = 10; }
+        if (!limit || !Number(limit) || limit <= 1){ limit = 10; }
         var Links = mongoose.model('Links', models.linkscheme);
         Links.find().sort("date").limit(limit).exec(function(err, links){return callback(links)})
     },
