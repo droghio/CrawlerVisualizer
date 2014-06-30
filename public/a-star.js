@@ -42,7 +42,7 @@ aStar.prototype = {
     startnode: null,    //Node
     currentnode: null,  //Node
     goalnode: null,     //Node
-    traceBack: function(){ console.log("GOOAAALLL!!!!!!! Distance: " + String(this.currentnode.aStarDepth)); return false; },
+    traceBack: function(distance){ console.log("GOOAAALLL!!!!!!! Distance: " + String(distance)); return false; },
     //Should make this actually trace back the path.
     
     
@@ -93,9 +93,10 @@ aStar.prototype = {
 
         //If the search is done.
         if (this.openset.isEmpty() || this.currentnode == this.goalnode){
-            while (this.closedset.length){ this.closedset.pop(); } //Clean the closed set.
+            distance = this.currentnode.aStarDepth
+            while (this.closedset.length){ this.closedset.pop().aStarDepth = null; } //Clean the closed set.
             this.openset.clear()
-            return this.currentnode == this.goalnode ? this.traceBack() : false; //Failure!
+            return this.currentnode == this.goalnode ? this.traceBack(distance) : false; //Failure!
         }
 
         //Reset the depth if we are preforming another search on this data.
@@ -124,7 +125,7 @@ aStar.prototype = {
 }
 
 /*
-search = new aStar(nodes["http://syr.edu/"], nodes["http://syr.edu/index.html"], function (l, r){ return (l.aStarDepth < r.aStarDepth) ? 1 : (l.aStarDepth == r.aStarDepth ? 0 : -1) }, d3.values(edges), function(val){ return val.name; }, function(l, r){return l.target == r.target && l.source == r.source;}).start();
+(search = new aStar(nodes["http://syr.edu/"], nodes["http://news.syr.edu/"], function (l, r){ return (l.aStarDepth < r.aStarDepth) ? 1 : -1 }, d3.values(edges), function(val){ return val.name; }, function(l, r){return (l.name === r.name);})).start()
 
 console.log("Closed: " + JSON.stringify(search.closedset))
 console.log("Open " + JSON.stringify(search.openset))
